@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid black; }
+        th { background-color: navy; color: white; }
+    </style>
+
+<link rel="stylesheet" type="text/css" href="/css/styles.css">
+</head>
+<body>
+    <h1>Admin Dashboard - Qualified Students</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>USN</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody id="qualifiedStudents"></tbody>
+    </table>
+
+    <script>
+        fetch('/admin')
+            .then(response => response.json())
+            .then(students => {
+                const tableBody = document.getElementById('qualifiedStudents');
+                students.forEach(student => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${student.usn}</td>
+                        <td>${student.name}</td>
+                        <td>${student.email}</td>
+                        <td>${student.phone}</td>
+                        <td>${student.score}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            });
+    </script>
+
+
+<h2>Add New Question</h2>
+<form id="addQuestionForm">
+    <input type="text" id="question" placeholder="Question" required><br>
+    <input type="text" id="option1" placeholder="Option 1" required><br>
+    <input type="text" id="option2" placeholder="Option 2" required><br>
+    <input type="text" id="option3" placeholder="Option 3" required><br>
+    <input type="text" id="option4" placeholder="Option 4" required><br>
+    <input type="text" id="correctAnswer" placeholder="Correct Answer" required><br>
+    <button type="submit">Add Question</button>
+</form>
+
+<script>
+    document.getElementById('addQuestionForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        const newQuestion = {
+            question: document.getElementById('question').value,
+            options: [
+                document.getElementById('option1').value,
+                document.getElementById('option2').value,
+                document.getElementById('option3').value,
+                document.getElementById('option4').value
+            ],
+            correctAnswer: document.getElementById('correctAnswer').value
+        };
+
+        fetch('/add-question', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newQuestion)
+        }).then(() => alert('Question added!'));
+    });
+</script>
+
+</body>
+</html>

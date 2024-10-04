@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ISTE Aptitude Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .test-container { width: 60%; margin: auto; padding-top: 20px; }
+        .question { margin-bottom: 20px; }
+    </style>
+    <link rel="stylesheet" type="text/css" href="/css/styles.css">
+
+</head>
+<body>
+    <div class="test-container">
+        <h2>Answer the following questions:</h2>
+        <form id="testForm" action="/submit-test" method="POST">
+            <div id="questionsContainer"></div>
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        // Fetch questions from the server
+        fetch('/get-questions')
+            .then(response => response.json())
+            .then(questions => {
+                const container = document.getElementById('questionsContainer');
+                questions.forEach((question, index) => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.classList.add('question');
+                    questionDiv.innerHTML = `<h4>${index + 1}. ${question.question}</h4>`;
+                    question.options.forEach(option => {
+                        questionDiv.innerHTML += `
+                            <input type="radio" name="q${index}" value="${option}" required> ${option}<br>
+                        `;
+                    });
+                    container.appendChild(questionDiv);
+                });
+            });
+
+        // Tab switch detection (disqualification)
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                alert("You switched tabs! You are disqualified.");
+                window.location.href = "/disqualify";
+            }
+        });
+
+        // Auto-submit test after 30 minutes
+        setTimeout(() => {
+            alert("Time's up! Submitting the test.");
+            document.getElementById('testForm').submit();
+        }, 1800000); // 30 minutes in milliseconds
+    </script>
+</body>
+</html>
+
+                
